@@ -6,3 +6,10 @@ Start Instance (user_data.sh)
 
 2 - Efetuar Deploy de uma aplicação Wordpress com:
 container de aplicação RDS database Mysql
+
+3 - Configuração da utilização do serviço EFS AWS para estáticos
+do container de aplicação Wordpress
+
+4 - configuração do serviço de Load Balancer AWS para a aplicação
+Wordpress
+
