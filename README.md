@@ -76,5 +76,8 @@ Criar um nome inicial do Database.
 - Devemos criar uma chave SSH
 
 
+Criar o script user_data.sh para instalar o docker, wordpress e nfs-utils;\
+montar o efs e criar o yaml para conectar ao rds.
 
+  
 
