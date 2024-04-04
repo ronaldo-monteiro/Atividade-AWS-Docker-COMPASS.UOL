@@ -100,7 +100,7 @@ services:\
     image: wordpress:latest\
     volumes:\
       - /mnt/efs/wordpress:/var/www/html\
-    ports:\
+    ports:
       - 80:80\
     restart: always\
     environment:\
@@ -111,3 +111,36 @@ services:\
       WORDPRESS_TABLE_CONFIG: wp_" | sudo tee /mnt/efs/docker-compose.yml\
 cd /mnt/efs && sudo docker-compose up -d\
 
+<h2>Criar o Load Balancer</h2>
+
+- Precisamos criar um Load Balancer.
+- Para isso vamos em EC2 -> Load Balancing -> Load Balancers -> Create load balancer.
+- Foi sugerido usar o Classic Load Balancer.
+- Em basic information seleciona o scheme Internet-facing
+- Selecione A VPC criada anteriormente
+- Em Mappings marque as duas Az's e selecione as duas Subnets Públicas
+- Selecione o SG-PUBLIC para acesso à internet
+- Em Listeners e Routing, vou colocar as portas http:80 e tcp:22
+- Em Health checks, vou selecionar tcp:80
+
+<h2>Criar o EndPoint</h2>
+
+- Este Endpoint serve de túnel da internet para às instâncias via SSH que não têm IP público.
+- Neste passo, para criá-lo vamos em VPC -> Endpoints -> Create endpoint
+- Em Service Category selecionar EC2 Instance Connect Endpoint
+- Em VPC, selecionar a anterior criada
+- Em Security Group selecionar a SG-PUBLIC
+- Em subnet, selecionar a private-1a
+
+ <h2>Criar o Auto Scaling</h2>
+ 
+- Para criar o ASG iremos em EC2 -> Auto Scaling -> Auto Scaling Groups e Create Auto Scaling Groups.
+- Selecione o Template criado anteriormente, a VPC e as 2 Subnets Privadas.
+- Attach to an existing load balancer - Choose from Classic Load Balancers, escolher o load Balancer criado
+- Health Check é recomendado ligar o ELB health checks
+- Para o group Size vou colocar como Desire capacity = 2, Min = 2 e Max = 4.
+- Em target tracking, vou ativar o automatic scaling para 80% de utilização da CPU.
+
+Tudo estiver configurado corretamente, podemos acessar a aplicação pelo DNS do Load Balancer (e não pelo IP das instâncias).
+
+<h2>Fim do projeto!</h2>
