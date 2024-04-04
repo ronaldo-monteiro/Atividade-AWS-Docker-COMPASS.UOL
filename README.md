@@ -1,4 +1,7 @@
-<h1 align="center">Atividade AWS - Docker </h1>
+<h1 align="center">Projeto AWS - Docker </h1>
+
+<h2 align="center">Passo a passo do projeto </h2>
+<ol>
 
 Desafio do do projeto:
 
