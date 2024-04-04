@@ -79,5 +79,35 @@ Criar um nome inicial do Database.
 Criar o script user_data.sh para instalar o docker, wordpress e nfs-utils;\
 montar o efs e criar o yaml para conectar ao rds.
 
-  
+#!/bin/bash
+sudo su\
+yum update -y\
+yum install docker -y\
+systemctl start docker\
+systemctl enable docker\
+usermod -aG docker ec2-user\
+curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose\
+chmod +x /usr/local/bin/docker-compose\
+mv /usr/local/bin/docker-compose /bin/docker-compose\
+yum install nfs-utils -y\
+mkdir /mnt/efs/\
+chmod +rwx /mnt/efs/\
+mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport ID_DO_SEU_EFS.efs.us-east-1.amazonaws.com:/ /mnt/efs\
+echo "ID_DO_SEU_EFS.efs.us-east-1.amazonaws.com:/ /mnt/efs nfs defaults 0 0" >> /etc/fstab
+echo "version: '3.8'\
+services:\
+  wordpress:\
+    image: wordpress:latest\
+    volumes:\
+      - /mnt/efs/wordpress:/var/www/html\
+    ports:\
+      - 80:80\
+    restart: always\
+    environment:\
+      WORDPRESS_DB_HOST: ENDPOINT XXXXX\
+      WORDPRESS_DB_USER: MASTER USERNAME XXXXX\
+      WORDPRESS_DB_PASSWORD: MASTER PASSWORD XXXXX\
+      WORDPRESS_DB_NAME: INITIAL NAME XXXXX\
+      WORDPRESS_TABLE_CONFIG: wp_" | sudo tee /mnt/efs/docker-compose.yml\
+cd /mnt/efs && sudo docker-compose up -d\
 
